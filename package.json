@@ -1,0 +1,27 @@
+{
+  "name": "markov-chain-base",
+  "version": "0.1.0",
+  "description": "A lightweight and flexible implementation of Markov chains with support for n-grams, text generation, and persistence",
+  "author": "mutagen-d",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "webpack --mode production"
+  },
+  "homepage": "https://github.com/mutagen-d/markov-chain-base",
+  "keywords": [
+    "markov",
+    "markov chain",
+    "text generator",
+    "n-gram"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mutagen-d/markov-chain-base"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1"
+  }
+}
