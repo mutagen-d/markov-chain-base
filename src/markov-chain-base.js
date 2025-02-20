@@ -22,23 +22,31 @@ const MarkovChainBaseJsonName = 'markov-chain-base'
  * }} IMarkovChainPersistence
  */
 
+/**
+ * @typedef {{
+ *  transitions?: IMarkovChainTransitions;
+ *  persistence?: IMarkovChainPersistence;
+ * }} IMarkovChainBaseParams
+ */
+
+const NGRAM_ORDER_DEFAULT = 2
+
 class MarkovChainBase {
   /**
-   * @param {number} [n] n-gram size (default `2`)
-   * @param {IMarkovChainPersistence} persistence 
+   * @param {number} [n] n-gram order (default `2`)
+   * @param {IMarkovChainBaseParams} [params]
    */
-  constructor(n = 2, persistence = null) {
+  constructor(n = NGRAM_ORDER_DEFAULT, params = null) {
+    params = params || {}
     /** @type {number} */
-    this.n = Math.max(1, n || 1);
+    this.n = Math.max(1, n || NGRAM_ORDER_DEFAULT);
     /** @type {Map<string, Map<string, number>>} */
     this.transitions = new Map();
+    if (params.transitions) {
+      this.setTransitions(params.transitions)
+    }
     /** @private */
-    this.persistence = persistence
-  }
-
-  /** @private */
-  get k() {
-    return this.n - 1
+    this.persistence = params.persistence
   }
 
   /** @param {string[]} states */
@@ -148,4 +156,4 @@ class MarkovChainBase {
   }
 }
 
-module.exports = { MarkovChainBase }
+module.exports = { MarkovChainBase, NGRAM_ORDER_DEFAULT }
