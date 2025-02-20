@@ -7,7 +7,7 @@ A lightweight and flexible implementation of Markov chains with support for n-gr
 - **N-Gram Support**: Use n-grams (e.g., bigrams, trigrams) for more coherent text generation
 - **Text Generation**: Generate words or sentences based on trained data
 - **Persistence**: Save and load Markov chain states to/from files or databases
-- **Customizable**: Easily extend the library to implement custom persistence or transition logic
+- **Customizable**: Easily extend the library to implement custom persistence, transition logic, or text tokenizer/joiner
 - **Browser Support**: Use the pre-built `markov-chain.min.js` for browser environments
 
 ## Installation
@@ -28,6 +28,7 @@ npm install markov-chain-base
 
 - [Quick Start](#quick-start)
 - [Text Generation](#text-generation)
+- [Custom Text Tokenizer/Joiner](#custom-text-tokenizer-joiner)
 - [N-Grams](#n-grams)
 - [Persistence](#persistence)
 
@@ -128,6 +129,32 @@ const generatedSentences = markovChain.generateSentence('The', 6)
 console.log(generatedSentences)
 ```
 
+### Custom Text Tokenizer-Joiner
+
+You can provide a custom text tokenizer/joiner by implementing the `ITextTool` interface:
+
+```typescript
+interface ITextTool {
+  tokenize?: (text: string) => string[]; // Tokenize text into words
+  join?: (tokens: string[]) => string;   // Join tokens into a single string
+  countSentences?: (tokens: string[]) => number; // Count sentences in tokens
+}
+```
+
+#### Example
+
+```js
+const customTextTool = {
+  tokenize: (text) => text.split(/\s+/), // Split text by whitespace
+  join: (tokens) => tokens.join(' '),    // Join tokens with a space
+  countSentences: (tokens) => tokens.filter((token) => token.endsWith('.')).length, // Count sentences
+};
+
+const markovChain = new MarkovChainText(2, {
+  textTool: customTextTool
+});
+```
+
 ### N-Grams
 
 Use n-grams to generate more coherent text by considering the context of previous words.
@@ -173,7 +200,9 @@ class MyPersistence {
 }
 
 // Create a Markov chain with persistence (with bigram)
-const markovChain = new MarkovChainBase(2, new MyPersistence())
+const markovChain = new MarkovChainBase(2, {
+  persistence: new MyPersistence(),
+})
 
 // Save to file
 await markovChain.save()
@@ -208,11 +237,11 @@ interface IMarkovChainPersistence {
 ### `MarkovChainText`
 
 - inherited methods from `MarkovChainBase`
-- `train(text: string)`: Train the Markov chain on a text corpus.
+- `train(text: string | string[])`: Train the Markov chain on a text corpus.
   This method can also be invoked multiple times to incrementally update the transition weights.
-- `generate(initialState: string, numSteps?: number)`: Generate up to `numSteps` amount of new words. If no transition found for the next word then generation stops
-- `generate(initialState: string, stopCondition?: (generatedWords: string[], stepIndex: number) => boolean)`: Generate text until the condition is met or no transition is found for the next word.
-- `generateSentence(initialState: string, numSentences?: number)`: Generate up to `numSentences` amount of sentences. Generation stops if no transition is found for the next word.
+- `generate(initialState: string | string[], numSteps?: number)`: Generate up to `numSteps` amount of new words. If no transition found for the next word then generation stops
+- `generate(initialState: string | string[], stopCondition?: (generatedWords: string[], stepIndex: number) => boolean)`: Generate text until the condition is met or no transition is found for the next word.
+- `generateSentence(initialState: string | string[], numSentences?: number)`: Generate up to `numSentences` amount of sentences. Generation stops if no transition is found for the next word.
 
 ## License
 
